@@ -1,0 +1,107 @@
+﻿@page "/"
+@using HormoneHarmony.Models
+@using HormoneHarmony.Data
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<HormoneHarmony.Data.AppDbContext> DbFactory
+
+@rendermode InteractiveServer
+
+<div style="padding: 40px; max-width: 1300px; margin: 0 auto;">
+
+    <div style="background: white; border-radius: 30px; padding: 60px; text-align: center; margin-bottom: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); border: 1px solid #fceef2;">
+        <h1 style="font-family: serif; font-size: 3.5rem; color: #4A154B; margin-bottom: 15px;">Nourish Your Body</h1>
+        <p style="color: #888; font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+            Discover recipes crafted to support hormonal balance and help you feel your best every day.
+        </p>
+    </div>
+
+    <div style="display: flex; justify-content: center; margin-bottom: 40px;">
+        <div style="position: relative; width: 100%; max-width: 600px;">
+            <input type="text" placeholder="Search by ingredient, dish or hormone hero..."
+                   @bind="SearchTerm" @bind:event="oninput"
+                   style="width: 100%; padding: 15px 20px 15px 50px; border-radius: 30px; border: 1px solid #eee; background: white; font-size: 1.05rem; box-shadow: 0 4px 20px rgba(0,0,0,0.04); color: #4A154B; outline: none;" />
+            <span style="position: absolute; left: 20px; top: 15px; font-size: 1.2rem;">🔍</span>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px;">
+        @if (filteredRecipes != null && filteredRecipes.Any())
+        {
+            @foreach (var recipe in filteredRecipes)
+            {
+                <a href="/recipe/@recipe.Id" style="display: flex; flex-direction: column; text-decoration: none; color: inherit; background: white; border-radius: 25px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05); position: relative; border: 1px solid #fceef2; transition: transform 0.2s, box-shadow 0.2s;">
+
+                    <div style="position: absolute; top: 15px; right: 15px; background: white; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; color: #FF2D55; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 2;">❤️</div>
+
+                    @if (!string.IsNullOrEmpty(recipe.ImageUrl))
+                    {
+                        <img src="@recipe.ImageUrl" style="width: 100%; height: 250px; object-fit: cover; display: block;" />
+                    }
+                    else
+                    {
+                        <div style="width: 100%; height: 250px; background: #fafafa; display: flex; align-items: center; justify-content: center; color: #ccc;">No Image</div>
+                    }
+
+                    <div style="padding: 25px; display: flex; flex-direction: column; flex-grow: 1;">
+                        <h3 style="font-family: serif; color: #4A154B; font-size: 1.5rem; margin-top: 0; margin-bottom: 10px;">@recipe.Title</h3>
+                        <p style="color: #777; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; flex-grow: 1;">@recipe.Description</p>
+
+                        <div style="display: flex; gap: 20px; font-size: 0.9rem; color: #999; border-top: 1px solid #eee; padding-top: 15px;">
+                            <span style="display: flex; align-items: center; gap: 5px;"><span style="color: #FF2D55;">⏱</span> @recipe.PreparationTime min</span>
+                            <span style="display: flex; align-items: center; gap: 5px;"><span style="color: #FF2D55;">🔥</span> @recipe.Calories kcal</span>
+                        </div>
+                    </div>
+                </a>
+            }
+        }
+        else if (filteredRecipes != null && !filteredRecipes.Any())
+        {
+            <div style="grid-column: 1 / -1; text-align: center; padding: 60px; color: #888;">
+                <span style="font-size: 3rem; margin-bottom: 15px; display: block;">🔍</span>
+                <h3 style="color: #4A154B; font-family: serif;">No recipes found</h3>
+                <p>Try searching for a different ingredient or dish name.</p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<Recipe>? allRecipes;
+    private List<Recipe>? filteredRecipes;
+
+    private string _searchTerm = "";
+
+    private string SearchTerm
+    {
+        get => _searchTerm;
+        set
+        {
+            _searchTerm = value;
+            FilterRecipes();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var ctx = DbFactory.CreateDbContext();
+        allRecipes = await ctx.Recipes.ToListAsync();
+
+        filteredRecipes = allRecipes;
+    }
+
+    private void FilterRecipes()
+    {
+        if (string.IsNullOrWhiteSpace(_searchTerm))
+        {
+            filteredRecipes = allRecipes;
+        }
+        else
+        {
+            filteredRecipes = allRecipes?.Where(r =>
+                (r.Title != null && r.Title.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                (r.Ingredients != null && r.Ingredients.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                (r.Category != null && r.Category.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase))
+            ).ToList();
+        }
+    }
+}

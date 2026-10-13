@@ -1,0 +1,19 @@
+﻿@inherits LayoutComponentBase
+
+<div style="min-height: 100vh; background-color: #FFF5F7;">
+    <header style="position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; padding: 15px 40px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #eee;">
+
+        <a href="/" style="text-decoration: none; display: flex; align-items: center; gap: 10px; cursor: pointer;">
+            <span style="color: #4A154B; font-family: serif; font-size: 1.6rem; font-weight: bold;">🩷 Hormone Harmony</span>
+        </a>
+
+        <div style="display: flex; gap: 30px; align-items: center;">
+            <a href="/" style="color: #D17D98; text-decoration: none; font-weight: 500;">🔍 Browse Recipes</a>
+            <a href="/add-recipe" style="color: #666; text-decoration: none; font-weight: 500;">➕ Add Recipe</a>
+        </div>
+    </header>
+
+    <main>
+        @Body
+    </main>
+</div>

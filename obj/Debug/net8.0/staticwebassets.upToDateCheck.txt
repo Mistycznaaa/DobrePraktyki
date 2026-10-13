@@ -1,0 +1,9 @@
+wwwroot\app.css
+wwwroot\bootstrap\bootstrap.min.css
+wwwroot\bootstrap\bootstrap.min.css.map
+wwwroot\favicon.png
+wwwroot\images\avocado_toast.jpg
+wwwroot\images\berry_smothie.jpg
+wwwroot\images\e4f50a46-2d2c-42e6-9734-d0403a370b8e.jpg
+wwwroot\images\oatmeal.jpg
+wwwroot\images\salmon_bowl.jpg
